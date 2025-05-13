@@ -49,7 +49,7 @@ public class PauseMenuFactory {
         addTextGlow(titleText);
 
         // Create menu panel with gradient background
-        Rectangle menuPanel = new Rectangle(400, 350);
+        Rectangle menuPanel = new Rectangle(400, 300);
         menuPanel.setArcWidth(30);
         menuPanel.setArcHeight(30);
 
@@ -105,7 +105,7 @@ public class PauseMenuFactory {
      */
     private static StackPane createMenuButton(String text, Runnable action) {
         // Create button background
-        Rectangle bg = new Rectangle(250, 50);
+        Rectangle bg = new Rectangle(320, 60);
         bg.setArcWidth(15);
         bg.setArcHeight(15);
         bg.setFill(Color.rgb(0, 0, 0, 0.6));

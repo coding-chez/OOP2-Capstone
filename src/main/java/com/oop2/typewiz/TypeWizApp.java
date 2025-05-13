@@ -92,7 +92,6 @@ public class TypeWizApp extends GameApplication {
     @Override
     protected void initGame() {
         // Initialize managers first (Model and Controller components)
-
         FXGL.getAssetLoader().loadSound("sound-library/click.wav");
         initializeManagers();
 
@@ -104,6 +103,11 @@ public class TypeWizApp extends GameApplication {
 
         // Set up state handlers
         setupStateHandlers();
+
+        // Start game music with fade in
+        SoundManager.getInstance().stopBGM(); // Make sure any previous music is stopped
+        SoundManager.getInstance().playBGM("game");
+        SoundManager.getInstance().fadeInBGM(Duration.seconds(2.0));
 
         // Start the first wave
         stateManager.announceWave(1);

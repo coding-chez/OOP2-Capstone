@@ -1,6 +1,7 @@
 package com.oop2.typewiz;
 
 import com.almasb.fxgl.dsl.FXGL;
+import com.oop2.typewiz.util.SoundManager;
 import javafx.scene.Node;
 
 public class SceneManager {
@@ -37,7 +38,13 @@ public class SceneManager {
         // Store the selected difficulty
         FXGL.getWorldProperties().setValue("difficulty", difficulty);
 
-        // Start the game
-        FXGL.getGameController().startNewGame();
+        // Stop menu music first
+        SoundManager.getInstance().stopBGM();
+
+        // Small delay before starting the game to ensure clean state
+        FXGL.runOnce(() -> {
+            // Start the game
+            FXGL.getGameController().startNewGame();
+        }, javafx.util.Duration.millis(100));
     }
 }
