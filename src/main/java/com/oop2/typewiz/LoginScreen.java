@@ -49,10 +49,6 @@ public class LoginScreen extends FXGLMenu {
                         "-fx-background-position: center center;"
         );
 
-        // Apply cursor style to all elements
-        root.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
-        root.setStyle(root.getStyle() + " * { -fx-cursor: none; }");
-
 
         // Left logo
         VBox leftBox = new VBox();
