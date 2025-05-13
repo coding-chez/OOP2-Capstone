@@ -84,9 +84,29 @@ We incorporated several design patterns to ensure maintainable and efficient cod
 
 <img src="https://github.com/user-attachments/assets/f4be2632-bdb9-410b-b1a6-00f6fe8e5ee6" width="150" height="110" align="right" />
 
-- **Singleton Pattern:** Used for managing game states and shared resources like the game timer and score tracker.
-- **Observer Pattern:** Implemented for event-driven communication between game components, such as notifying observers when the player achieves a milestone.
-- **Factory Pattern:** Utilized for creating game entities dynamically without exposing the instantiation logic.
+### *Creational Design Patterns*
+- *Singleton Pattern*
+  - Used for managing shared resources like the SoundManager and WordFactory.
+- *Factory Pattern*
+  - Used extensively for creating game entities and UI components, e.g., WordFactory, GargoyleFactory, GrimougeFactory, VyleyeFactory, UIFactory, and GamePromptFactory.
+
+---
+
+<img src="https://github.com/user-attachments/assets/6d88cb19-1304-4c3f-a26e-2da54ff26003" width="150" height="110" align="right" />
+
+### *Behavioral Design Patterns*
+- *Observer Pattern*
+  - Used for event-driven communication between game components (e.g., notifying observers when the player achieves a milestone).
+- *State Pattern*
+  - Implemented in GameStateManager to manage and transition between different game states (e.g., PLAYING, PAUSED, GAME_OVER).
+
+---
+
+<img src="https://github.com/user-attachments/assets/ec55b907-f5e0-4f42-b088-db0533a9e6aa" width="100" height="90" align="right" />
+
+### *Architectural Patterns*
+- *MVC (Model-View-Controller)*
+  - The main Game class and related managers (e.g., GameStateManager, EntityManager, UIFactory) follow the MVC pattern for separation of concerns.
 
 ---
 
