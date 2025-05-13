@@ -1,6 +1,8 @@
 package com.oop2.typewiz.GameplayComponents;
 
 import com.almasb.fxgl.dsl.FXGL;
+import com.oop2.typewiz.SceneManager;
+import com.oop2.typewiz.TypeWizApp;
 import com.oop2.typewiz.util.SoundManager;
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
@@ -102,21 +104,32 @@ public class GamePromptFactory {
         ofText.setFont(Font.font(MAGIC_FONT, FontWeight.BOLD, 36));
         ofText.setFill(TEXT_MYSTIC);
 
-        // Dynamic difficulty text with magical colors
+        // Get the actual selected difficulty from FXGL world properties
         String difficultyLevel;
         Color difficultyColor;
-        if (currentWave <= 3) {
-            difficultyLevel = "APPRENTICE";
-            difficultyColor = MAGIC_BLUE;
-        } else if (currentWave <= 6) {
-            difficultyLevel = "ADEPT";
-            difficultyColor = MAGIC_PURPLE;
-        } else if (currentWave <= 9) {
-            difficultyLevel = "MASTER";
-            difficultyColor = MAGIC_VIOLET;
-        } else {
-            difficultyLevel = "ARCHMAGE";
-            difficultyColor = MAGIC_GOLD;
+
+        String diffStr = "APPRENTICE";  // Default fallback
+        try {
+            if (FXGL.getWorldProperties().exists("difficultyString")) {
+                diffStr = FXGL.getWorldProperties().getString("difficultyString");
+            }
+        } catch (Exception e) {
+            System.out.println("[DEBUG] Error getting difficulty from world properties: " + e.getMessage());
+        }
+
+        switch (diffStr) {
+            case "WIZARD":
+                difficultyLevel = "WIZARD";
+                difficultyColor = MAGIC_VIOLET;
+                break;
+            case "ARCHMAGE":
+                difficultyLevel = "ARCHMAGE";
+                difficultyColor = MAGIC_GOLD;
+                break;
+            default:
+                difficultyLevel = "APPRENTICE";
+                difficultyColor = MAGIC_BLUE;
+                break;
         }
 
         Text difficultyText = new Text(difficultyLevel);
@@ -251,6 +264,16 @@ public class GamePromptFactory {
         StackPane restartButton = UIFactory.createStylishButton("Cast Again", 220, 65, MAGIC_PURPLE);
         restartButton.setId("play-again-button");
 
+        // Back to tower button
+        StackPane backToTowerButton = UIFactory.createStylishButton("Back to Tower", 220, 65, MAGIC_PURPLE);
+        backToTowerButton.setId("back-to-tower-button");
+
+        // Button container with spacing
+        HBox buttonContainer = new HBox(20); // 20 pixels spacing between buttons
+        buttonContainer.setAlignment(Pos.CENTER);
+        buttonContainer.getChildren().addAll(restartButton, backToTowerButton);
+        buttonContainer.setId("button-container");
+
         // Two-column mystical layout
         HBox statsLayout = new HBox(30);
         statsLayout.setAlignment(Pos.CENTER);
@@ -289,7 +312,7 @@ public class GamePromptFactory {
         VBox fullLayout = new VBox(10);  // Reduced spacing from 20 to 10
         fullLayout.setAlignment(Pos.CENTER);
         fullLayout.setPadding(new Insets(0, 0, 30, 0));  // Added bottom padding
-        fullLayout.getChildren().addAll(titleBox, statsLayout, restartButton);
+        fullLayout.getChildren().addAll(titleBox, statsLayout, buttonContainer);
 
         // Add magical entrance animation
         FadeTransition fadeIn = new FadeTransition(Duration.seconds(1), fullLayout);
@@ -338,9 +361,37 @@ public class GamePromptFactory {
      * @param restartAction Action to execute when the button is clicked
      */
     public static void setupPlayAgainButton(Node endGameScreen, Runnable restartAction) {
-        // Search for the button in the hierarchy
-        if (endGameScreen instanceof StackPane) {
-            findButtonInChildren(endGameScreen, restartAction);
+        // Find the button container
+        if (endGameScreen instanceof Parent) {
+            Parent root = (Parent) endGameScreen;
+            root.lookupAll("#button-container").forEach(node -> {
+                if (node instanceof HBox) {
+                    HBox buttonContainer = (HBox) node;
+                    for (Node child : buttonContainer.getChildren()) {
+                        if (child instanceof StackPane) {
+                            StackPane button = (StackPane) child;
+                            if ("play-again-button".equals(button.getId())) {
+                                button.setOnMouseClicked(event -> {
+                                    event.consume();
+                                    FXGL.getGameTimer().runOnceAfter(restartAction::run, Duration.millis(100));
+                                });
+                            } else if ("back-to-tower-button".equals(button.getId())) {
+                                button.setOnMouseClicked(event -> {
+                                    event.consume();
+                                    FXGL.getGameTimer().runOnceAfter(() -> {
+                                        // Stop game music
+                                        SoundManager.getInstance().stopBGM();
+                                        // Play button click sound
+                                        SoundManager.getInstance().playButtonClick();
+                                        // Show main menu
+                                        SceneManager.showScreen(TypeWizApp.ScreenType.MAIN_MENU);
+                                    }, Duration.millis(100));
+                                });
+                            }
+                        }
+                    }
+                }
+            });
         }
     }
 
@@ -351,43 +402,7 @@ public class GamePromptFactory {
      * @return true if button was found and configured
      */
     private static boolean findButtonInChildren(Node node, Runnable restartAction) {
-        // Base case: found a StackPane that contains "Play Again" text
-        if (node instanceof StackPane) {
-            StackPane stackPane = (StackPane) node;
-
-            // Search for the text node
-            for (Node child : stackPane.getChildren()) {
-                if (child instanceof Text) {
-                    Text text = (Text) child;
-                    if (text.getText().equals("Cast Again")) {
-                        // Assign an ID to the button for easier identification
-                        stackPane.setId("play-again-button");
-
-                        // This is the button, add click handler with event consumption
-                        stackPane.setOnMouseClicked(event -> {
-                            event.consume(); // Prevent event bubbling
-
-                            // Schedule restart on next frame to avoid concurrent modification
-                            FXGL.getGameTimer().runOnceAfter(() -> {
-                                restartAction.run();
-                            }, javafx.util.Duration.millis(100));
-                        });
-                        return true;
-                    }
-                }
-            }
-        }
-
-        // Recursively search in children
-        if (node instanceof Parent) {
-            Parent parent = (Parent) node;
-            for (Node child : parent.getChildrenUnmodifiable()) {
-                if (findButtonInChildren(child, restartAction)) {
-                    return true;
-                }
-            }
-        }
-
+        // This method is no longer needed as we're using a different approach
         return false;
     }
 } 

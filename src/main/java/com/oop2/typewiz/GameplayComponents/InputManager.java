@@ -110,8 +110,7 @@ public class InputManager {
         // Handle retry on game over screen
         if (stateManager.isInState(GameStateManager.GameState.GAME_OVER) ||
                 stateManager.isInState(GameStateManager.GameState.VICTORY)) {
-            if ((event.getCode() == KeyCode.ENTER || event.getCode() == KeyCode.SPACE) &&
-                    restartGameCallback != null) {
+            if (event.getCode() == KeyCode.ENTER && restartGameCallback != null) {
                 System.out.println("Restarting game via keyboard...");
                 // Play button click sound for restart
                 SoundManager.getInstance().playDamage();

@@ -155,6 +155,10 @@ public class TypeWizApp extends GameApplication {
         System.out.println("[DEBUG] Selected difficulty: " + difficulty + " (" + (difficulty == null ? "null" : difficulty.getClass().getName()) + ")");
         if (difficulty == null) difficulty = Difficulty.APPRENTICE;
 
+        // Store both the enum and string representation
+        FXGL.getWorldProperties().setValue("difficultyString", difficulty.toString());
+        FXGL.getWorldProperties().setValue("difficulty", difficulty);
+
         // Set parameters based on difficulty
         int maxWaves;
         int maxActiveEntities;
@@ -211,16 +215,16 @@ public class TypeWizApp extends GameApplication {
         playerManager = new PlayerManager();
         inputManager = new InputManager(entityManager, playerManager, stateManager);
         waveManager = new WaveManager(
-            entityManager,
-            stateManager,
-            this::getRandomWordForWave,
-            FXGL.getAppHeight(),
-            maxWaves,
-            waveSpawnsPerWave,
-            waveSpeedMultipliers,
-            minSpawnsPerGroupByWave,
-            maxSpawnsPerGroupByWave,
-            spawnDelayMultipliers
+                entityManager,
+                stateManager,
+                this::getRandomWordForWave,
+                FXGL.getAppHeight(),
+                maxWaves,
+                waveSpawnsPerWave,
+                waveSpeedMultipliers,
+                minSpawnsPerGroupByWave,
+                maxSpawnsPerGroupByWave,
+                spawnDelayMultipliers
         );
         FXGL.getWorldProperties().setValue("playerManager", playerManager);
         FXGL.getWorldProperties().setValue("inputManager", inputManager);
@@ -607,10 +611,17 @@ public class TypeWizApp extends GameApplication {
         // Play button click sound
         SoundManager.getInstance().playButtonClick();
 
-        // TODO: Implement back to tower functionality
-        // For now, just restart the game
-        SceneManager.showScreen(TypeWizApp.ScreenType.MAIN_MENU);
+        // Clear all game entities
+        FXGL.getGameWorld().getEntities().clear();
 
+        // Remove all UI nodes
+        List<Node> nodesToRemove = new ArrayList<>(FXGL.getGameScene().getUINodes());
+        for (Node node : nodesToRemove) {
+            FXGL.removeUINode(node);
+        }
+
+        // Show main menu screen
+        SceneManager.showScreen(TypeWizApp.ScreenType.MAIN_MENU);
     }
 
     public static void main(String[] args) {

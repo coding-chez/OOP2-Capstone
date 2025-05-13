@@ -8,6 +8,7 @@ import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.texture.AnimatedTexture;
 import com.almasb.fxgl.texture.AnimationChannel;
+import com.oop2.typewiz.SceneManager;
 import com.oop2.typewiz.TypeWizApp;
 import com.oop2.typewiz.util.SoundManager;
 import javafx.geometry.Insets;
@@ -234,8 +235,8 @@ public class UIFactory {
             data.waveLabel.setText("Difficulty: " + data.difficultyLabel);
             data.waveText.setText("1/" + data.maxWaves);
         } else {
-            data.waveLabel.setText("Wave " + wave);
-            data.waveText.setText("");
+            data.waveLabel.setText("Wave " + wave + " - " + data.difficultyLabel);
+            data.waveText.setText(wave + "/" + data.maxWaves);
         }
     }
 
@@ -970,5 +971,47 @@ public class UIFactory {
         panel.getChildren().addAll(titleLabel, contentLabel);
 
         return panel;
+    }
+
+    public static void setupPlayAgainButton(Node endGameScreen, Runnable playAgainAction) {
+        // Find the play again button in the screen
+        if (endGameScreen instanceof VBox) {
+            VBox container = (VBox) endGameScreen;
+            for (Node node : container.getChildren()) {
+                if (node instanceof HBox && "button-container".equals(node.getId())) {
+                    HBox buttonContainer = (HBox) node;
+
+                    // Create the back to tower button
+                    StackPane backToTowerButton = createStylishButton("Back to Tower", 200, 50, UI_ACCENT_COLOR);
+                    backToTowerButton.setId("back-to-tower-button");
+
+                    // Add spacing between buttons
+                    buttonContainer.setSpacing(20);
+
+                    // Add the back to tower button
+                    buttonContainer.getChildren().add(backToTowerButton);
+
+                    // Set up the play again button action
+                    for (Node buttonNode : buttonContainer.getChildren()) {
+                        if (buttonNode instanceof StackPane) {
+                            StackPane button = (StackPane) buttonNode;
+                            if ("play-again-button".equals(button.getId())) {
+                                button.setOnMouseClicked(e -> playAgainAction.run());
+                            } else if ("back-to-tower-button".equals(button.getId())) {
+                                button.setOnMouseClicked(e -> {
+                                    // Stop game music
+                                    SoundManager.getInstance().stopBGM();
+                                    // Play button click sound
+                                    SoundManager.getInstance().playButtonClick();
+                                    // Show main menu
+                                    SceneManager.showScreen(TypeWizApp.ScreenType.MAIN_MENU);
+                                });
+                            }
+                        }
+                    }
+                    break;
+                }
+            }
+        }
     }
 }
