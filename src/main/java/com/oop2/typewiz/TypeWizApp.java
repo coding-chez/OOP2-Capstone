@@ -360,6 +360,8 @@ public class TypeWizApp extends GameApplication {
         // Pass character count to statistics factory
         StatsUIFactory.setTotalCharactersTyped(playerManager.getTotalCharactersTyped());
 
+        playerManager.updateHighScoreInDatabaseIfNeeded();
+
         // Create game over screen with all statistics
         Node endGameScreen = GamePromptFactory.createGameOverScreen(
                 title,
@@ -369,7 +371,8 @@ public class TypeWizApp extends GameApplication {
                 playerManager.calculateAccuracy(),
                 playerManager.calculateConsistency(),
                 playerManager.getWpmOverTime(),
-                playerManager.getAccuracyOverTime()
+                playerManager.getAccuracyOverTime(),
+                PlayerManager.getHighScore()
         );
 
         // Add a unique ID to the screen for easy identification

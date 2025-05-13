@@ -5,6 +5,7 @@ import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.app.scene.FXGLMenu;
 import com.almasb.fxgl.app.scene.MenuType;
 import com.almasb.fxgl.dsl.FXGL;
+import com.oop2.typewiz.database.UserDatabaseService;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -27,6 +28,12 @@ import javafx.scene.input.MouseEvent;
 import org.jetbrains.annotations.NotNull;
 
 public class RegisterScreen extends FXGLMenu {
+
+    private TextField emailField;
+    private TextField usernameField;
+    private PasswordField passwordField;
+    private PasswordField confirmPasswordField;
+
 
     private HBox root;
 
@@ -81,8 +88,31 @@ public class RegisterScreen extends FXGLMenu {
         Button createAccountBtn = new Button("Create Account");
         styleButton(createAccountBtn, "#c85bff", Color.WHITE);
         createAccountBtn.setOnAction(e -> {
-            FXGL.play("sound-library/click.wav"); // plays the sound
-            SceneManager.showScreen(TypeWizApp.ScreenType.LOADING);
+            FXGL.play("sound-library/click.wav");
+
+            String email = emailField.getText();
+            String username = usernameField.getText();
+            String password = passwordField.getText();
+            String confirmPassword = confirmPasswordField.getText();
+
+            if (email.isEmpty() || username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
+                FXGL.getDialogService().showMessageBox("All fields are required!");
+                return;
+            }
+
+            if (!password.equals(confirmPassword)) {
+                FXGL.getDialogService().showMessageBox("Passwords do not match!");
+                return;
+            }
+
+            boolean success = UserDatabaseService.registerUser(username, email, password);
+
+            if (success) {
+                FXGL.getDialogService().showMessageBox("Registration successful!");
+                SceneManager.showScreen(TypeWizApp.ScreenType.LOGIN);
+            } else {
+                FXGL.getDialogService().showMessageBox("Registration failed. Try again.");
+            }
         });
 
 
@@ -126,7 +156,7 @@ public class RegisterScreen extends FXGLMenu {
     private HBox createInputField(String iconPath, String promptText, boolean isPassword) {
         HBox box = new HBox(10);
         box.setAlignment(Pos.CENTER_LEFT);
-        box.setPrefSize(600, 54); // Increased to allow room for text field + icon
+        box.setPrefSize(600, 54);
         box.setStyle("-fx-background-color: rgba(255,255,255,0.07); -fx-background-radius: 30;");
         box.setPadding(new Insets(0, 20, 0, 20));
         box.setEffect(new Glow(0.3));
@@ -142,6 +172,12 @@ public class RegisterScreen extends FXGLMenu {
             pf.setStyle("-fx-background-color: transparent; -fx-text-fill: white;");
             pf.setMaxWidth(Double.MAX_VALUE);
             HBox.setHgrow(pf, Priority.ALWAYS);
+
+            if (promptText.equalsIgnoreCase("Password")) {
+                passwordField = pf;
+            } else if (promptText.equalsIgnoreCase("Confirm Password")) {
+                confirmPasswordField = pf;
+            }
 
             TextField visibleTF = new TextField();
             visibleTF.setFont(Font.font("Book Antiqua Italic", 20));
@@ -168,14 +204,20 @@ public class RegisterScreen extends FXGLMenu {
             Region spacer = new Region();
             HBox.setHgrow(spacer, Priority.NEVER);
             box.getChildren().addAll(icon, pf, visibleTF, spacer, eyeIcon);
+
         } else {
             TextField tf = new TextField();
             tf.setPromptText(promptText);
-            tf.fontProperty().unbind();
             tf.setFont(Font.font("Book Antiqua Italic", 20));
             tf.setStyle("-fx-background-color: transparent; -fx-text-fill: white;");
             tf.setMaxWidth(Double.MAX_VALUE);
             HBox.setHgrow(tf, Priority.ALWAYS);
+
+            if (promptText.equalsIgnoreCase("Email")) {
+                emailField = tf;
+            } else if (promptText.equalsIgnoreCase("Username")) {
+                usernameField = tf;
+            }
 
             box.getChildren().addAll(icon, tf);
         }

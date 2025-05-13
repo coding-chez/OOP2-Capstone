@@ -5,6 +5,8 @@ import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.app.scene.FXGLMenu;
 import com.almasb.fxgl.app.scene.MenuType;
 import com.almasb.fxgl.dsl.FXGL;
+import com.oop2.typewiz.GameplayComponents.PlayerManager;
+import com.oop2.typewiz.database.UserDatabaseService;
 import javafx.animation.*;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -26,7 +28,15 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.nio.charset.StandardCharsets;
 
+import static com.almasb.fxgl.dsl.FXGLForKtKt.showMessage;
+
 public class LoginScreen extends FXGLMenu {
+
+    private TextField usernameField;
+    private PasswordField passwordField;
+    private PlayerManager playerManager;
+
+
     private HBox root; // class-level root
 
     public LoginScreen() {
@@ -97,8 +107,27 @@ public class LoginScreen extends FXGLMenu {
         Button loginButton = FXGL.getUIFactoryService().newButton("Login");
         styleButton(loginButton, "#c85bff", Color.WHITE);
         loginButton.setOnAction(e -> {
-            FXGL.play("sound-library/click.wav"); // plays the sound
-            SceneManager.showScreen(TypeWizApp.ScreenType.LOADING);
+            FXGL.play("sound-library/click.wav");
+            String username = usernameField.getText().trim();
+            String password = passwordField.getText().trim();
+
+            if (username.isEmpty() || password.isEmpty()) {
+                showMessage("Please fill in all fields.");
+                return;
+            }
+
+            UserDatabaseService.User user = UserDatabaseService.getInstance().loginUser(username, password);
+
+            if (user != null) {
+                // ✅ Use the singleton directly — DO NOT use uninitialized `playerManager`
+                PlayerManager.getInstance().setUsername(user.getUsername());
+                PlayerManager.getInstance().setHighScore(user.getHighScore());
+                System.out.println("Logged in user: " + user.getUsername() + " | High Score: " + user.getHighScore());
+
+                SceneManager.showScreen(TypeWizApp.ScreenType.LOADING);
+            } else {
+                showMessage("Invalid username or password.");
+            }
         });
 
 
@@ -244,6 +273,9 @@ public class LoginScreen extends FXGLMenu {
             pf.setMaxWidth(Double.MAX_VALUE);
             HBox.setHgrow(pf, Priority.ALWAYS);
 
+            // 🔐 Store reference for login validation
+            passwordField = pf;
+
             TextField visibleTF = new TextField();
             visibleTF.setFont(Font.font("Book Antiqua Italic", 20));
             visibleTF.setStyle("-fx-background-color: transparent; -fx-text-fill: white; -fx-prompt-text-fill: #bbbbbb;");
@@ -276,6 +308,10 @@ public class LoginScreen extends FXGLMenu {
             tf.setStyle("-fx-background-color: transparent; -fx-text-fill: white; -fx-prompt-text-fill: #bbbbbb;");
             tf.setMaxWidth(Double.MAX_VALUE);
             HBox.setHgrow(tf, Priority.ALWAYS);
+
+            // 👤 Store reference for login validation
+            usernameField = tf;
+
             box.getChildren().addAll(icon, tf);
         }
 

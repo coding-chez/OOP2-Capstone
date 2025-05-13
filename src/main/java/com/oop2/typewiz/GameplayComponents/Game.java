@@ -293,6 +293,7 @@ public class Game extends GameApplication {
         for (Node node : nodesToRemove) {
             FXGL.removeUINode(node);
         }
+        playerManager.updateHighScoreInDatabaseIfNeeded();
 
         // Pass character count to statistics factory
         StatsUIFactory.setTotalCharactersTyped(playerManager.getTotalCharactersTyped());
@@ -306,7 +307,8 @@ public class Game extends GameApplication {
                 playerManager.calculateAccuracy(),
                 playerManager.calculateConsistency(),
                 playerManager.getWpmOverTime(),
-                playerManager.getAccuracyOverTime()
+                playerManager.getAccuracyOverTime(),
+                PlayerManager.getHighScore()
         );
 
         // Add a unique ID to the screen for easy identification

@@ -195,7 +195,7 @@ public class GamePromptFactory {
      */
     public static Node createGameOverScreen(String message, int score, double wpm,
                                             double rawWpm, double accuracy, double consistency,
-                                            List<Double> wpmData, List<Double> accuracyData) {
+                                            List<Double> wpmData, List<Double> accuracyData, int highScore) {
         // Play appropriate sound effect
         if (message.contains("Victory")) {
             SoundManager.getInstance().playVictory();
@@ -237,6 +237,17 @@ public class GamePromptFactory {
         HBox titleBox = new HBox(titleText);
         titleBox.setAlignment(Pos.CENTER);
         titleBox.setPadding(new Insets(10));  // Reduced from 30 to 10
+
+        Text highScoreText = new Text("Highest Score: " + highScore);
+        highScoreText.setFont(Font.font("Arial", FontWeight.BOLD, 24));
+        highScoreText.setFill(Color.GOLD);
+
+        Glow highScoreGlow = new Glow(0.4);
+        DropShadow highScoreShadow = new DropShadow();
+        highScoreShadow.setColor(Color.GOLD);
+        highScoreShadow.setRadius(8);
+        highScoreShadow.setInput(highScoreGlow);
+        highScoreText.setEffect(highScoreShadow);
 
         // Magical score display
         Text scoreText = new Text("Magical Score: " + score);
@@ -280,7 +291,7 @@ public class GamePromptFactory {
         statsLayout.setPadding(new Insets(25));
 
         // Left column (Magical Stats)
-        VBox leftColumn = new VBox(20, scoreText, statsPanel);
+        VBox leftColumn = new VBox(20, scoreText, highScoreText, statsPanel);
         leftColumn.setAlignment(Pos.CENTER);
         leftColumn.setPadding(new Insets(15));
 

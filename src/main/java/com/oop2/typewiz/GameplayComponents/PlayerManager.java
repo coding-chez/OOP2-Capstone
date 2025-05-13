@@ -1,7 +1,12 @@
 package com.oop2.typewiz.GameplayComponents;
 
+import com.oop2.typewiz.database.DatabaseConnection;
 import com.oop2.typewiz.util.SoundManager;
 import javafx.scene.text.Text;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.scene.paint.Color;
@@ -18,6 +23,17 @@ public class PlayerManager {
 
     private int playerHealth;
     private int score;
+    private static int highScore = 0;
+    private String username;
+
+    private static PlayerManager instance;
+
+    public static PlayerManager getInstance() {
+        if (instance == null) {
+            instance = new PlayerManager();
+        }
+        return instance;
+    }
 
     // Typing statistics
     private int totalKeystrokes;
@@ -187,6 +203,43 @@ public class PlayerManager {
         if (scoreText != null) {
             scoreText.setText(Integer.toString(score));
         }
+    }
+
+    public void updateHighScoreInDatabaseIfNeeded() {
+        if (score > highScore) {
+            highScore = score;
+            System.out.println("New high score: " + highScore);
+
+            // Ensure the username is set before updating
+            String username = PlayerManager.getInstance().getUsername();
+
+            try (Connection conn = DatabaseConnection.getConnection()) {
+                String sql = "UPDATE users SET high_score = ? WHERE username = ?";
+                PreparedStatement stmt = conn.prepareStatement(sql);
+                stmt.setInt(1, highScore);
+                stmt.setString(2, username);
+                stmt.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private String getUsername() {
+        return username;
+    }
+
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setHighScore(int highScore) {
+        this.highScore = highScore;
+    }
+
+    public static int getHighScore() {
+        return highScore;
     }
 
     /**
