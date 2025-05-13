@@ -165,6 +165,7 @@ public class DifficultyMenuScreen extends FXGLMenu {
 
         // Hover effects (Scale Animation)
         button.setOnMouseEntered(e -> {
+            button.setCursor(TypeWizApp.OPEN_BOOK_CURSOR);
             FXGL.getAudioPlayer().playSound(FXGL.getAssetLoader().loadSound("sound-library/hover.wav"));
 
             ThreadManager.runAsyncThenUI(
@@ -179,6 +180,7 @@ public class DifficultyMenuScreen extends FXGLMenu {
         });
 
         button.setOnMouseExited(e -> {
+            button.setCursor(TypeWizApp.CLOSED_BOOK_CURSOR);
             ThreadManager.runAsyncThenUI(
                     () -> {
                         ScaleTransition scaleDown = new ScaleTransition(Duration.seconds(0.2), button);

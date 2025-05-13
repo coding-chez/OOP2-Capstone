@@ -5,7 +5,6 @@ import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.app.scene.FXGLMenu;
 import com.almasb.fxgl.app.scene.MenuType;
 import com.almasb.fxgl.dsl.FXGL;
-import com.oop2.typewiz.database.UserDatabaseService;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -29,17 +28,13 @@ import org.jetbrains.annotations.NotNull;
 
 public class RegisterScreen extends FXGLMenu {
 
-    private TextField emailField;
-    private TextField usernameField;
-    private PasswordField passwordField;
-    private PasswordField confirmPasswordField;
-
-
     private HBox root;
 
     public RegisterScreen() {
         super(MenuType.MAIN_MENU);
         addRegisterUI();
+        getContentRoot().getChildren().add(root);
+        root.setCursor(TypeWizApp.CLOSED_BOOK_CURSOR);
     }
 
     private void addRegisterUI() {
@@ -88,31 +83,8 @@ public class RegisterScreen extends FXGLMenu {
         Button createAccountBtn = new Button("Create Account");
         styleButton(createAccountBtn, "#c85bff", Color.WHITE);
         createAccountBtn.setOnAction(e -> {
-            FXGL.play("sound-library/click.wav");
-
-            String email = emailField.getText();
-            String username = usernameField.getText();
-            String password = passwordField.getText();
-            String confirmPassword = confirmPasswordField.getText();
-
-            if (email.isEmpty() || username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
-                FXGL.getDialogService().showMessageBox("All fields are required!");
-                return;
-            }
-
-            if (!password.equals(confirmPassword)) {
-                FXGL.getDialogService().showMessageBox("Passwords do not match!");
-                return;
-            }
-
-            boolean success = UserDatabaseService.registerUser(username, email, password);
-
-            if (success) {
-                FXGL.getDialogService().showMessageBox("Registration successful!");
-                SceneManager.showScreen(TypeWizApp.ScreenType.LOGIN);
-            } else {
-                FXGL.getDialogService().showMessageBox("Registration failed. Try again.");
-            }
+            FXGL.play("sound-library/click.wav"); // plays the sound
+            SceneManager.showScreen(TypeWizApp.ScreenType.LOADING);
         });
 
 
@@ -149,8 +121,6 @@ public class RegisterScreen extends FXGLMenu {
         animateNode(loginBtn, 1.6);
 
         root.getChildren().addAll(leftPane, formPane);
-        getContentRoot().getChildren().add(root);
-
     }
 
     private HBox createInputField(String iconPath, String promptText, boolean isPassword) {
@@ -173,11 +143,9 @@ public class RegisterScreen extends FXGLMenu {
             pf.setMaxWidth(Double.MAX_VALUE);
             HBox.setHgrow(pf, Priority.ALWAYS);
 
-            if (promptText.equalsIgnoreCase("Password")) {
-                passwordField = pf;
-            } else if (promptText.equalsIgnoreCase("Confirm Password")) {
-                confirmPasswordField = pf;
-            }
+            // Add cursor behavior to password field
+            pf.setOnMouseEntered(e -> pf.setCursor(TypeWizApp.OPEN_BOOK_CURSOR));
+            pf.setOnMouseExited(e -> pf.setCursor(TypeWizApp.CLOSED_BOOK_CURSOR));
 
             TextField visibleTF = new TextField();
             visibleTF.setFont(Font.font("Book Antiqua Italic", 20));
@@ -188,9 +156,18 @@ public class RegisterScreen extends FXGLMenu {
             visibleTF.setMaxWidth(Double.MAX_VALUE);
             HBox.setHgrow(visibleTF, Priority.ALWAYS);
 
+            // Add cursor behavior to visible text field
+            visibleTF.setOnMouseEntered(e -> visibleTF.setCursor(TypeWizApp.OPEN_BOOK_CURSOR));
+            visibleTF.setOnMouseExited(e -> visibleTF.setCursor(TypeWizApp.CLOSED_BOOK_CURSOR));
+
             ImageView eyeIcon = new ImageView(new Image(getClass().getResource("assets/password_hash_icon.png").toExternalForm()));
             eyeIcon.setFitHeight(24);
             eyeIcon.setFitWidth(24);
+
+            // Add cursor behavior to eye icon
+            eyeIcon.setOnMouseEntered(e -> eyeIcon.setCursor(TypeWizApp.OPEN_BOOK_CURSOR));
+            eyeIcon.setOnMouseExited(e -> eyeIcon.setCursor(TypeWizApp.CLOSED_BOOK_CURSOR));
+
             eyeIcon.setOnMouseClicked(e -> {
                 boolean showing = visibleTF.isVisible();
                 visibleTF.setVisible(!showing);
@@ -204,7 +181,6 @@ public class RegisterScreen extends FXGLMenu {
             Region spacer = new Region();
             HBox.setHgrow(spacer, Priority.NEVER);
             box.getChildren().addAll(icon, pf, visibleTF, spacer, eyeIcon);
-
         } else {
             TextField tf = new TextField();
             tf.setPromptText(promptText);
@@ -213,11 +189,9 @@ public class RegisterScreen extends FXGLMenu {
             tf.setMaxWidth(Double.MAX_VALUE);
             HBox.setHgrow(tf, Priority.ALWAYS);
 
-            if (promptText.equalsIgnoreCase("Email")) {
-                emailField = tf;
-            } else if (promptText.equalsIgnoreCase("Username")) {
-                usernameField = tf;
-            }
+            // Add cursor behavior to text field
+            tf.setOnMouseEntered(e -> tf.setCursor(TypeWizApp.OPEN_BOOK_CURSOR));
+            tf.setOnMouseExited(e -> tf.setCursor(TypeWizApp.CLOSED_BOOK_CURSOR));
 
             box.getChildren().addAll(icon, tf);
         }

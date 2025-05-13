@@ -5,8 +5,6 @@ import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.app.scene.FXGLMenu;
 import com.almasb.fxgl.app.scene.MenuType;
 import com.almasb.fxgl.dsl.FXGL;
-import com.oop2.typewiz.GameplayComponents.PlayerManager;
-import com.oop2.typewiz.database.UserDatabaseService;
 import javafx.animation.*;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -28,28 +26,21 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.nio.charset.StandardCharsets;
 
-import static com.almasb.fxgl.dsl.FXGLForKtKt.showMessage;
-
 public class LoginScreen extends FXGLMenu {
-
-    private TextField usernameField;
-    private PasswordField passwordField;
-    private PlayerManager playerManager;
-
-
     private HBox root; // class-level root
 
     public LoginScreen() {
         super(MenuType.MAIN_MENU);
         addLoginUI();
         getContentRoot().getChildren().add(root);
+        root.setCursor(TypeWizApp.CLOSED_BOOK_CURSOR);
     }
 
     public void addLoginUI() {
         root = new HBox(10);
         root.setAlignment(Pos.CENTER);
         root.setPrefSize(1280, 720);
-       // root.setCursor(TypeWizApp.CLOSED_BOOK_CURSOR);
+        // root.setCursor(TypeWizApp.CLOSED_BOOK_CURSOR);
 //        root.setStyle("-fx-background-color: linear-gradient(to bottom right, #1c0033, #4b0082);");
         root.setStyle(
                 "-fx-background-image: url('assets/textures/background-and-platforms/darkerpurplebg.png');" +
@@ -57,6 +48,11 @@ public class LoginScreen extends FXGLMenu {
                         "-fx-background-size: cover;" +
                         "-fx-background-position: center center;"
         );
+
+        // Apply cursor style to all elements
+        root.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
+        root.setStyle(root.getStyle() + " * { -fx-cursor: none; }");
+
 
         // Left logo
         VBox leftBox = new VBox();
@@ -107,27 +103,8 @@ public class LoginScreen extends FXGLMenu {
         Button loginButton = FXGL.getUIFactoryService().newButton("Login");
         styleButton(loginButton, "#c85bff", Color.WHITE);
         loginButton.setOnAction(e -> {
-            FXGL.play("sound-library/click.wav");
-            String username = usernameField.getText().trim();
-            String password = passwordField.getText().trim();
-
-            if (username.isEmpty() || password.isEmpty()) {
-                showMessage("Please fill in all fields.");
-                return;
-            }
-
-            UserDatabaseService.User user = UserDatabaseService.getInstance().loginUser(username, password);
-
-            if (user != null) {
-                // ✅ Use the singleton directly — DO NOT use uninitialized `playerManager`
-                PlayerManager.getInstance().setUsername(user.getUsername());
-                PlayerManager.getInstance().setHighScore(user.getHighScore());
-                System.out.println("Logged in user: " + user.getUsername() + " | High Score: " + user.getHighScore());
-
-                SceneManager.showScreen(TypeWizApp.ScreenType.LOADING);
-            } else {
-                showMessage("Invalid username or password.");
-            }
+            FXGL.play("sound-library/click.wav"); // plays the sound
+            SceneManager.showScreen(TypeWizApp.ScreenType.LOADING);
         });
 
 
@@ -165,7 +142,7 @@ public class LoginScreen extends FXGLMenu {
         root.getChildren().addAll(leftBox, rightBox);
 ////        FXGL.getGameScene().getRoot().setCursor(TypeWizApp.CLOSED_BOOK_CURSOR);
 //        javafx.application.Platform.runLater(() ->
-                root.setCursor(TypeWizApp.CLOSED_BOOK_CURSOR);
+        root.setCursor(TypeWizApp.CLOSED_BOOK_CURSOR);
 //        );
 //        applyFadeInAnimation(root);
     }
@@ -255,7 +232,7 @@ public class LoginScreen extends FXGLMenu {
     private HBox createInputField(String iconPath, String promptText, boolean isPassword) {
         HBox box = new HBox(10);
         box.setAlignment(Pos.CENTER_LEFT);
-        box.setPrefSize(600, 54); // Increased to allow room for text field + icon
+        box.setPrefSize(600, 54);
         box.setStyle("-fx-background-color: rgba(255,255,255,0.07); -fx-background-radius: 30;");
         box.setPadding(new Insets(0, 20, 0, 20));
         box.setEffect(new Glow(0.3));
@@ -273,8 +250,9 @@ public class LoginScreen extends FXGLMenu {
             pf.setMaxWidth(Double.MAX_VALUE);
             HBox.setHgrow(pf, Priority.ALWAYS);
 
-            // 🔐 Store reference for login validation
-            passwordField = pf;
+            // Add cursor behavior to password field
+            pf.setOnMouseEntered(e -> pf.setCursor(TypeWizApp.OPEN_BOOK_CURSOR));
+            pf.setOnMouseExited(e -> pf.setCursor(TypeWizApp.CLOSED_BOOK_CURSOR));
 
             TextField visibleTF = new TextField();
             visibleTF.setFont(Font.font("Book Antiqua Italic", 20));
@@ -285,9 +263,18 @@ public class LoginScreen extends FXGLMenu {
             visibleTF.setMaxWidth(Double.MAX_VALUE);
             HBox.setHgrow(visibleTF, Priority.ALWAYS);
 
+            // Add cursor behavior to visible text field
+            visibleTF.setOnMouseEntered(e -> visibleTF.setCursor(TypeWizApp.OPEN_BOOK_CURSOR));
+            visibleTF.setOnMouseExited(e -> visibleTF.setCursor(TypeWizApp.CLOSED_BOOK_CURSOR));
+
             ImageView eyeIcon = new ImageView(new Image(getClass().getResource("assets/password_hash_icon.png").toExternalForm()));
             eyeIcon.setFitHeight(24);
             eyeIcon.setFitWidth(24);
+
+            // Add cursor behavior to eye icon
+            eyeIcon.setOnMouseEntered(e -> eyeIcon.setCursor(TypeWizApp.OPEN_BOOK_CURSOR));
+            eyeIcon.setOnMouseExited(e -> eyeIcon.setCursor(TypeWizApp.CLOSED_BOOK_CURSOR));
+
             eyeIcon.setOnMouseClicked(e -> {
                 boolean showing = visibleTF.isVisible();
                 visibleTF.setVisible(!showing);
@@ -309,8 +296,9 @@ public class LoginScreen extends FXGLMenu {
             tf.setMaxWidth(Double.MAX_VALUE);
             HBox.setHgrow(tf, Priority.ALWAYS);
 
-            // 👤 Store reference for login validation
-            usernameField = tf;
+            // Add cursor behavior to text field
+            tf.setOnMouseEntered(e -> tf.setCursor(TypeWizApp.OPEN_BOOK_CURSOR));
+            tf.setOnMouseExited(e -> tf.setCursor(TypeWizApp.CLOSED_BOOK_CURSOR));
 
             box.getChildren().addAll(icon, tf);
         }
