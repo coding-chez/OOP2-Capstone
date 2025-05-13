@@ -93,10 +93,21 @@ We incorporated several design patterns to ensure maintainable and efficient cod
 ## Advanced Concepts Incorporated 💻✨
 
 ### Threads and Multithreading
-The game leverages threads and multithreading to enhance performance and responsiveness:
-- **Game Loop:** A separate thread manages the game loop, ensuring smooth gameplay and timely updates for animations and collision detection.
-- **Background Tasks:** Long-running operations, such as database interactions or loading resources, are executed on background threads to prevent blocking the main UI thread.
-- **Multithreading for Concurrency:** By using multiple threads, we ensured responsiveness even under heavy computational loads.
+
+The **TypeWiz** game utilizes threads and multithreading to ensure optimal performance and a seamless user experience:
+
+- **Game Loop Execution:** A dedicated thread is responsible for managing the game loop, ensuring smooth animations, real-time collision detection, and consistent gameplay updates.
+- **Asynchronous Background Tasks:** Resource-intensive operations, such as database interactions using JDBC or loading large assets, are executed on separate background threads. This prevents the main UI thread from freezing or becoming unresponsive.
+- **Concurrent Gameplay Mechanics:** Multithreading is employed to handle concurrent gameplay mechanics, such as spawning enemies, tracking player inputs, and managing game events, ensuring the game remains responsive and immersive even under heavy computational loads.
+
+### Serialization
+
+Serialization is utilized in **TypeWiz** to save and retrieve game states efficiently, ensuring a seamless gaming experience. The following files were applied for serialization:
+
+- **TypeWizApp.java**: Handles the game's overall serialization processes, saving the application state when needed.
+- **Game.java**: Implements the serialization of specific game components, such as player progress and current game states.
+
+Serialization allows the game to maintain continuity by storing and loading data, enhancing the overall user experience.
 
 ### JDBC (Java Database Connectivity)
 To enhance the game's functionality, we integrated JDBC:
@@ -107,13 +118,15 @@ To enhance the game's functionality, we integrated JDBC:
 ---
 
 ## Features
-<img src="https://github.com/user-attachments/assets/8aa88937-db30-46b6-adcf-b6c71043fcd3" width="180" height="140" align="right" />
+<img src="https://github.com/user-attachments/assets/8aa88937-db30-46b6-adcf-b6c71043fcd3" width="200" height="220" align="right" />
 
-- **Real-time Typing-based Combat:** Type words to cast spells and defeat enemies.
-- **Dynamic Difficulty Levels:** Choose from Apprentice, Wizard, or Archmage modes to match your skill level.
-- **Leaderboard Integration:** Track high scores and compete with others.
-- **Multithreaded Game Loop:** For smooth animations and responsive gameplay.
-- **Modular Design:** Built with clean, maintainable code using OOP principles and design patterns.
+- **Real-time Typing-based Combat:** Engage in fast-paced gameplay by typing words to cast spells and defeat waves of enemies.
+- **Dynamic Difficulty Levels:** Select from Apprentice (easy), Wizard (moderate), or Archmage (challenging) modes to match your skill level and improve over time.
+- **Leaderboard Integration:** Compete globally by tracking high scores and showcasing your typing prowess.
+- **Multithreaded Game Loop:** Enjoy smooth animations and responsive gameplay mechanics, powered by an efficient multithreaded architecture.
+- **Serialization Support:** Save and retrieve game states seamlessly to maintain progress across sessions.
+- **Enhanced Modular Design:** The codebase is structured with clean, maintainable modules, leveraging OOP principles and design patterns for future scalability.
+
 
 ---
 
