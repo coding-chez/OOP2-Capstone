@@ -17,14 +17,14 @@
 
 </div>
 
-|  | Name                          | GitHub Username          | Contributions           |
-|-----------------|-------------------------------|--------------------------|-------------------------|
-| <img src="https://avatars.githubusercontent.com/u/152886984?s=60&v=4" width="50" height="50" /> | **Chestine May Mari C. Cabiso** | [@coding-chez](https://github.com/coding-chez) | Graphics, Game Design Concept, Documentation, Visionary Lead |
-| <img src="https://avatars.githubusercontent.com/u/204818059?s=60&v=4" width="50" height="50" /> | **Axille Dayonot**               | [@axille-dayonot](https://github.com/axille-dayonot) | Database Connection, JDBC Lead, Testing, Debugger |
-| <img src="https://avatars.githubusercontent.com/u/189881347?s=60&v=4" width="50" height="50" /> | **Axille Dayonot [alt]**          | [@timothymoti](https://github.com/timothymoti) | Database Connection, JDBC Lead, Testing, Debugger |
-| <img src="https://avatars.githubusercontent.com/u/185242254?s=60&v=4" width="50" height="50" /> | **Ruhmer Jairus R. Espina**      | [@0rdinaryProgrammer](https://github.com/0rdinaryProgrammer) | Game Logic, Back-end Lead, Bug Fixes, Structure |
-| <img src="https://avatars.githubusercontent.com/u/183796331?s=60&v=4" width="50" height="50" /> | **Ruhmer Jairus R. Espina [alt]**| [@Argonautttt](https://github.com/Argonautttt) | Game Logic, Back-end Lead, Bug Fixes, Structure |
-| <img src="https://avatars.githubusercontent.com/u/134838637?s=60&v=4" width="50" height="50" /> | **Lovely Shane P. Ong**          | [@xienshane](https://github.com/xienshane) | Front-end Lead, UI Design, Documentation, SFX, Bug Fixes  |
+|  | Name                          | GitHub Username          | Contributions                                                  |
+|-----------------|-------------------------------|--------------------------|----------------------------------------------------------------|
+| <img src="https://avatars.githubusercontent.com/u/152886984?s=60&v=4" width="50" height="50" /> | **Chestine May Mari C. Cabiso** | [@coding-chez](https://github.com/coding-chez) | Graphics, Game Design Concept, Documentation, Visionary Lead   |
+| <img src="https://avatars.githubusercontent.com/u/204818059?s=60&v=4" width="50" height="50" /> | **Axille Dayonot**               | [@axille-dayonot](https://github.com/axille-dayonot) | Database Connection, JDBC Lead, Testing, Debugger              |
+| <img src="https://avatars.githubusercontent.com/u/189881347?s=60&v=4" width="50" height="50" /> | **Axille Dayonot [alt]**          | [@timothymoti](https://github.com/timothymoti) | Database Connection, JDBC Lead, Testing, Debugger              |
+| <img src="https://avatars.githubusercontent.com/u/185242254?s=60&v=4" width="50" height="50" /> | **Ruhmer Jairus R. Espina**      | [@0rdinaryProgrammer](https://github.com/0rdinaryProgrammer) | Game Logic, Back-end Lead, Bug Fixes, Structure                |
+| <img src="https://avatars.githubusercontent.com/u/183796331?s=60&v=4" width="50" height="50" /> | **Ruhmer Jairus R. Espina [alt]**| [@Argonautttt](https://github.com/Argonautttt) | Game Logic, Back-end Lead, Bug Fixes, Structure                |
+| <img src="https://avatars.githubusercontent.com/u/134838637?s=60&v=4" width="50" height="50" /> | **Lovely Shane P. Ong**          | [@xienshane](https://github.com/xienshane) | Front-end Lead, UI Design, Documentation, SFX & BGM, Bug Fixes |
 
 ---
 

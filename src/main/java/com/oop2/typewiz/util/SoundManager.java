@@ -288,9 +288,24 @@ public class SoundManager {
 
     public void playDamage() {
         try {
+            // Ensure game music is playing
+            ensureBackgroundMusic("game");
+
+//            // Temporarily lower BGM volume
+//            double originalVolume = FXGL.getSettings().getGlobalMusicVolume();
+//            FXGL.getSettings().setGlobalMusicVolume(originalVolume * 0.5);
+
+            // Play the damage sound
             FXGL.getAudioPlayer().playSound(FXGL.getAssetLoader().loadSound(DAMAGE));
+
+            // Restore BGM volume after a delay
+            FXGL.runOnce(() -> {
+//                FXGL.getSettings().setGlobalMusicVolume(originalVolume);
+                // Double check that music is still playing
+                ensureBackgroundMusic("game");
+            }, javafx.util.Duration.seconds(1));
         } catch (Exception e) {
-            System.err.println("Error playing button hover sound: " + e.getMessage());
+            System.err.println("Error playing damage sound: " + e.getMessage());
         }
     }
 }
