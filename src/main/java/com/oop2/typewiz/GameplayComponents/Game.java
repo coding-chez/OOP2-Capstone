@@ -157,12 +157,12 @@ public class Game extends GameApplication {
             break;
             case WIZARD :
                 maxWaves = 8;
-                maxActiveEntities = 14;
-                waveSpawnsPerWave = new int[]{8, 10, 12, 14, 16, 18, 20, 22};
-                waveSpeedMultipliers = new double[]{0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5};
+                maxActiveEntities = 10;
+                waveSpawnsPerWave = new int[]{6, 7, 8, 9, 10, 11, 12, 13};
+                waveSpeedMultipliers = new double[]{0.8, 0.8, 0.5, 1.1, 1.0, 1.0, 1.0, 1.3};
                 minSpawnsPerGroupByWave = new int[]{1, 1, 2, 2, 2, 3, 3, 3};
                 maxSpawnsPerGroupByWave = new int[]{2, 2, 3, 3, 4, 4, 5, 5};
-                spawnDelayMultipliers = new double[]{1.0, 0.95, 0.9, 0.85, 0.8, 0.75, 0.7, 0.65};
+                spawnDelayMultipliers = new double[]{1.0, 0.95, 0.95, 0.95, 0.8, 0.8, 0.8, 0.7};
                 break;
             
             case ARCHMAGE :
