@@ -11,6 +11,7 @@ import javafx.scene.ImageCursor;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
@@ -270,7 +271,7 @@ public class TypeWizApp extends GameApplication {
             // Reset any current input state to prepare for the new wave
             inputManager.reset();
 
-            // Update the wave counter in the UI
+            // Update the wave counter in the UI with the current wave number
             updateWaveUI(waveManager.getCurrentWave());
 
             // Show wave announcement and start wave
@@ -393,11 +394,15 @@ public class TypeWizApp extends GameApplication {
         // Update wave spawning
         boolean waveCompleted = waveManager.update();
         if (waveCompleted) {
+            int nextWave = waveManager.getCurrentWave();
+            System.out.println("[DEBUG] Wave completed. Current wave: " + nextWave);
             if (waveManager.areAllWavesCompleted()) {
                 stateManager.victory(null);
             } else {
+                // Update wave display before transitioning states
+                updateWaveUI(nextWave);
                 stateManager.completeWave(null);
-                stateManager.announceWave(waveManager.getCurrentWave());
+                stateManager.announceWave(nextWave);
             }
         }
 
@@ -494,6 +499,7 @@ public class TypeWizApp extends GameApplication {
      * @param wave Current wave number
      */
     private void updateWaveUI(int wave) {
+        System.out.println("[DEBUG] Updating wave UI to: " + wave);
         // Find the top bar HBox in the UI
         for (Node node : FXGL.getGameScene().getUINodes()) {
             if (node instanceof HBox) {
@@ -501,20 +507,32 @@ public class TypeWizApp extends GameApplication {
 
                 // Check if this is the top bar by looking for wave display
                 for (Node child : topBar.getChildren()) {
-                    if (child instanceof VBox) {
-                        VBox box = (VBox) child;
-                        if (!box.getChildren().isEmpty() && box.getChildren().get(0) instanceof Text) {
-                            Text label = (Text) box.getChildren().get(0);
-                            if (label.getText().equals("WAVE")) {
-                                // Found the wave display, update it
-                                UIFactory.updateWave(topBar, wave);
-                                return;
+                    if (child instanceof StackPane) {
+                        StackPane stackPane = (StackPane) child;
+                        for (Node stackChild : stackPane.getChildren()) {
+                            if (stackChild instanceof HBox) {
+                                HBox content = (HBox) stackChild;
+                                for (Node contentChild : content.getChildren()) {
+                                    if (contentChild instanceof VBox) {
+                                        VBox box = (VBox) contentChild;
+                                        if (!box.getChildren().isEmpty() && box.getChildren().get(0) instanceof Text) {
+                                            Text label = (Text) box.getChildren().get(0);
+                                            if (label.getText().contains("Difficulty") || label.getText().contains("Wave")) {
+                                                // Found the wave display, update it
+                                                UIFactory.updateWave(topBar, wave);
+                                                System.out.println("[DEBUG] Found and updated wave display");
+                                                return;
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
                 }
             }
         }
+        System.out.println("[DEBUG] Could not find wave display to update");
     }
 
     /**

@@ -229,15 +229,40 @@ public class UIFactory {
      * @param wave New wave value
      */
     public static void updateWave(HBox topBar, int wave) {
-        if (topBar == null || topBar.getUserData() == null) return;
-        TopBarData data = (TopBarData) topBar.getUserData();
-        if (wave == 1) {
-            data.waveLabel.setText("Difficulty: " + data.difficultyLabel);
-            data.waveText.setText("1/" + data.maxWaves);
-        } else {
-            data.waveLabel.setText("Wave " + wave + " - " + data.difficultyLabel);
-            data.waveText.setText(wave + "/" + data.maxWaves);
+        if (topBar == null || topBar.getUserData() == null) {
+            System.out.println("[DEBUG] Cannot update wave display: topBar or userData is null");
+            return;
         }
+        TopBarData data = (TopBarData) topBar.getUserData();
+
+        // Get difficulty string from world properties
+        String difficultyLabel = data.difficultyLabel;
+        if (FXGL.getWorldProperties().exists("difficultyString")) {
+            String diffStr = FXGL.getWorldProperties().getString("difficultyString");
+            if (diffStr != null) {
+                difficultyLabel = diffStr.charAt(0) + diffStr.substring(1).toLowerCase();
+            }
+        }
+
+        System.out.println("[DEBUG] Updating wave display - Current wave: " + wave + ", Max waves: " + data.maxWaves);
+
+        // Update wave counter text first
+        String waveText = wave + "/" + data.maxWaves;
+        data.waveText.setText(waveText);
+        System.out.println("[DEBUG] Updated wave text to: " + waveText);
+
+        // Then update the label text
+        String labelText;
+        if (wave == 1) {
+            labelText = "Difficulty: " + difficultyLabel;
+        } else {
+            labelText = "Wave " + wave + " - " + difficultyLabel;
+        }
+        data.waveLabel.setText(labelText);
+        System.out.println("[DEBUG] Updated wave label to: " + labelText);
+
+        // Force a layout update to ensure text is refreshed
+        topBar.requestLayout();
     }
 
     /**
@@ -756,10 +781,9 @@ public class UIFactory {
         // Get difficulty and maxWaves
         String difficultyLabel = "Apprentice";
         int maxWaves = 5;
-        if (FXGL.getWorldProperties().exists("difficulty")) {
-            Object diffObj = FXGL.getWorldProperties().getObject("difficulty");
-            if (diffObj != null) {
-                String diffStr = diffObj.toString();
+        if (FXGL.getWorldProperties().exists("difficultyString")) {
+            String diffStr = FXGL.getWorldProperties().getString("difficultyString");
+            if (diffStr != null) {
                 difficultyLabel = diffStr.charAt(0) + diffStr.substring(1).toLowerCase();
                 if (diffStr.equals("WIZARD")) maxWaves = 8;
                 else if (diffStr.equals("ARCHMAGE")) maxWaves = 12;
