@@ -131,6 +131,7 @@ public class Game extends GameApplication {
     private void initializeManagers() {
         // Get selected difficulty
         Difficulty difficulty = FXGL.getWorldProperties().getObject("difficulty");
+        System.out.println("[DEBUG] Selected difficulty: " + difficulty + " (" + (difficulty == null ? "null" : difficulty.getClass().getName()) + ")");
         if (difficulty == null) difficulty = Difficulty.APPRENTICE;
 
         // Set parameters based on difficulty
@@ -143,7 +144,7 @@ public class Game extends GameApplication {
         double[] spawnDelayMultipliers;
 
         switch (difficulty) {
-            case APPRENTICE -> {
+            case APPRENTICE :
                 maxWaves = 5;
                 maxActiveEntities = 10;
                 waveSpawnsPerWave = new int[]{6, 7, 8, 9, 10};
@@ -151,8 +152,10 @@ public class Game extends GameApplication {
                 minSpawnsPerGroupByWave = new int[]{1, 1, 1, 1, 1};
                 maxSpawnsPerGroupByWave = new int[]{1, 1, 2, 2, 3}; // max follow up entity is 1, increase per 3 waves
                 spawnDelayMultipliers = new double[]{1.2, 1.1, 1.0, 0.95, 0.9};
-            }
-            case WIZARD -> {
+                
+            
+            break;
+            case WIZARD :
                 maxWaves = 8;
                 maxActiveEntities = 14;
                 waveSpawnsPerWave = new int[]{8, 10, 12, 14, 16, 18, 20, 22};
@@ -160,8 +163,9 @@ public class Game extends GameApplication {
                 minSpawnsPerGroupByWave = new int[]{1, 1, 2, 2, 2, 3, 3, 3};
                 maxSpawnsPerGroupByWave = new int[]{2, 2, 3, 3, 4, 4, 5, 5};
                 spawnDelayMultipliers = new double[]{1.0, 0.95, 0.9, 0.85, 0.8, 0.75, 0.7, 0.65};
-            }
-            case ARCHMAGE -> {
+                break;
+            
+            case ARCHMAGE :
                 maxWaves = 12;
                 maxActiveEntities = 18;
                 waveSpawnsPerWave = new int[]{10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32};
@@ -169,8 +173,9 @@ public class Game extends GameApplication {
                 minSpawnsPerGroupByWave = new int[]{1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5};
                 maxSpawnsPerGroupByWave = new int[]{2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8};
                 spawnDelayMultipliers = new double[]{0.9, 0.85, 0.8, 0.75, 0.7, 0.65, 0.6, 0.55, 0.5, 0.45, 0.4, 0.35};
-            }
-            default -> throw new IllegalStateException("Unknown difficulty: " + difficulty);
+                break;
+            
+            default: throw new IllegalStateException("Unknown difficulty: " + difficulty);
         }
 
         // Create model components

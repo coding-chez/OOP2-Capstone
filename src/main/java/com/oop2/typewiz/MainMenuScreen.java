@@ -194,7 +194,8 @@ public class MainMenuScreen extends FXGLMenu {
         ThreadManager.runAsyncThenUI(
                 () -> {
                     FXGL.getWorldProperties().setValue("difficulty", difficulty);
-
+                    saveDifficultyToFile(difficulty);
+                    System.out.println("[DEBUG] Set difficulty in menu: " + FXGL.getWorldProperties().getObject("difficulty"));
                     // Simulate preloading sounds/resources
                     try {
                         Thread.sleep(1);
@@ -202,6 +203,14 @@ public class MainMenuScreen extends FXGLMenu {
                 },
                 () -> FXGL.getGameController().startNewGame()
         );
+    }
+
+    private static void saveDifficultyToFile(Difficulty difficulty) {
+        try {
+            java.nio.file.Files.writeString(java.nio.file.Path.of("selected_difficulty.txt"), difficulty.name());
+        } catch (Exception e) {
+            System.out.println("[DEBUG] Failed to save difficulty: " + e.getMessage());
+        }
     }
 
     private void preloadAssetsInBackground() {

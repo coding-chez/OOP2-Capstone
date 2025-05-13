@@ -149,89 +149,64 @@ public class UIFactory {
      * @param initialScore Initial score value
      * @param initialWave Initial wave value
      * @param maxWaves Maximum number of waves
+     * @param difficultyLabel Difficulty label
      * @return An HBox containing the top bar
      */
-    public static HBox createTopBar(int initialScore, int initialWave, int maxWaves) {
-        // Create main container with magical styling
-        HBox topBar = new HBox(20);  // Reduced spacing between elements
+    public static HBox createTopBar(int initialScore, int initialWave, int maxWaves, String difficultyLabel) {
+        HBox topBar = new HBox(20);
         topBar.setAlignment(Pos.CENTER);
-        topBar.setPadding(new Insets(5));  // Minimal padding
-        topBar.setMaxHeight(60);     // Reduced height
-
-        // Calculate center position
-        double centerX = FXGL.getAppWidth() / 2 - 200;  // Adjusted for narrower layout
+        topBar.setPadding(new Insets(5));
+        topBar.setMaxHeight(60);
+        double centerX = FXGL.getAppWidth() / 2 - 200;
         topBar.setTranslateX(centerX);
         topBar.setTranslateY(20);
-
-        // Create magical background with gradient
-        Rectangle bg = new Rectangle(400, 80);  // Reduced width and height
-        bg.setArcWidth(30);  // Adjusted corner radius
+        Rectangle bg = new Rectangle(400, 80);
+        bg.setArcWidth(30);
         bg.setArcHeight(30);
-
-        // Create a more magical gradient background
         LinearGradient gradient = new LinearGradient(
                 0, 0, 1, 0, true, javafx.scene.paint.CycleMethod.NO_CYCLE,
-                new Stop(0, Color.rgb(45, 0, 75, 0.9)),    // Deep purple start
-                new Stop(0.5, Color.rgb(75, 0, 130, 0.9)), // Royal purple middle
-                new Stop(1, Color.rgb(45, 0, 75, 0.9))     // Deep purple end
+                new Stop(0, Color.rgb(45, 0, 75, 0.9)),
+                new Stop(0.5, Color.rgb(75, 0, 130, 0.9)),
+                new Stop(1, Color.rgb(45, 0, 75, 0.9))
         );
         bg.setFill(gradient);
         bg.setStroke(UI_ACCENT_COLOR);
-        bg.setStrokeWidth(2);  // Slightly thinner border
-
-        // Score display with enhanced styling
-        VBox scoreDisplay = new VBox(2);  // Minimal spacing
+        bg.setStrokeWidth(2);
+        VBox scoreDisplay = new VBox(2);
         scoreDisplay.setAlignment(Pos.CENTER);
-        scoreDisplay.setPadding(new Insets(2, 8, 2, 8));  // Minimal padding
-
+        scoreDisplay.setPadding(new Insets(2, 8, 2, 8));
         Text scoreLabel = new Text("ARCANE POINTS");
-        scoreLabel.setFont(Font.font(FONT_FAMILY, FontWeight.BOLD, 16));  // Smaller font
+        scoreLabel.setFont(Font.font(FONT_FAMILY, FontWeight.BOLD, 16));
         scoreLabel.setFill(UI_ACCENT_COLOR);
         addTextGlow(scoreLabel, UI_SECONDARY_COLOR, 0.4);
-
         Text scoreText = new Text(Integer.toString(initialScore));
-        scoreText.setFont(Font.font(FONT_FAMILY, FontWeight.BOLD, 22));  // Smaller font
+        scoreText.setFont(Font.font(FONT_FAMILY, FontWeight.BOLD, 22));
         scoreText.setFill(UI_TEXT_SECONDARY);
         addTextGlow(scoreText, UI_SECONDARY_COLOR, 0.4);
-
         scoreDisplay.getChildren().addAll(scoreLabel, scoreText);
         scoreDisplay.setUserData(scoreText);
-
-        // Wave display with enhanced styling
-        VBox waveDisplay = new VBox(2);  // Minimal spacing
+        VBox waveDisplay = new VBox(2);
         waveDisplay.setAlignment(Pos.CENTER);
-        waveDisplay.setPadding(new Insets(2, 8, 2, 8));  // Minimal padding
-
-        Text waveLabel = new Text("SPELL WAVE");
-        waveLabel.setFont(Font.font(FONT_FAMILY, FontWeight.BOLD, 16));  // Smaller font
+        waveDisplay.setPadding(new Insets(2, 8, 2, 8));
+        Text waveLabel = new Text("Difficulty: " + difficultyLabel);
+        waveLabel.setFont(Font.font(FONT_FAMILY, FontWeight.BOLD, 16));
         waveLabel.setFill(UI_ACCENT_COLOR);
         addTextGlow(waveLabel, UI_SECONDARY_COLOR, 0.4);
-
         Text waveText = new Text(initialWave + "/" + maxWaves);
-        waveText.setFont(Font.font(FONT_FAMILY, FontWeight.BOLD, 22));  // Smaller font
+        waveText.setFont(Font.font(FONT_FAMILY, FontWeight.BOLD, 22));
         waveText.setFill(UI_TEXT_SECONDARY);
         addTextGlow(waveText, UI_SECONDARY_COLOR, 0.4);
-
         waveDisplay.getChildren().addAll(waveLabel, waveText);
         waveDisplay.setUserData(waveText);
-
-        // Create a magical separator
-        Rectangle separator = new Rectangle(2, 40);  // Shorter separator
+        Rectangle separator = new Rectangle(2, 40);
         separator.setFill(UI_ACCENT_COLOR);
         addShapeGlow(separator, UI_SECONDARY_COLOR, 0.3);
-
-        // Create content pane to hold everything
-        HBox content = new HBox(15, scoreDisplay, separator, waveDisplay);  // Reduced spacing
+        HBox content = new HBox(15, scoreDisplay, separator, waveDisplay);
         content.setAlignment(Pos.CENTER);
-
-        // Combine background and content
         StackPane finalLayout = new StackPane(bg, content);
         finalLayout.setAlignment(Pos.CENTER);
-
-        // Store the data in the top bar
         topBar.getChildren().add(finalLayout);
-        topBar.setUserData(new TopBarData(scoreText, waveText, maxWaves));
-
+        topBar.setUserData(new TopBarData(scoreText, waveText, maxWaves, waveLabel, difficultyLabel));
         return topBar;
     }
 
@@ -254,9 +229,14 @@ public class UIFactory {
      */
     public static void updateWave(HBox topBar, int wave) {
         if (topBar == null || topBar.getUserData() == null) return;
-
         TopBarData data = (TopBarData) topBar.getUserData();
-        data.waveText.setText(wave + "/" + data.maxWaves);
+        if (wave == 1) {
+            data.waveLabel.setText("Difficulty: " + data.difficultyLabel);
+            data.waveText.setText("1/" + data.maxWaves);
+        } else {
+            data.waveLabel.setText("Wave " + wave);
+            data.waveText.setText("");
+        }
     }
 
     /**
@@ -561,12 +541,15 @@ public class UIFactory {
         final Text scoreText;
         final Text waveText;
         final int maxWaves;
-
-        TopBarData(Text scoreText, Text waveText, int maxWaves) {
+        final Text waveLabel;
+        final String difficultyLabel;
+        TopBarData(Text scoreText, Text waveText, int maxWaves, Text waveLabel, String difficultyLabel) {
             super(null);
             this.scoreText = scoreText;
             this.waveText = waveText;
             this.maxWaves = maxWaves;
+            this.waveLabel = waveLabel;
+            this.difficultyLabel = difficultyLabel;
         }
     }
 
@@ -754,19 +737,12 @@ public class UIFactory {
      * @param game Reference to the game class
      */
     public static void createUI(GameApplication game) {
-        // Get the player manager from world properties
         PlayerManager playerManager = (PlayerManager) FXGL.getWorldProperties().getObject("playerManager");
-
-        // Create health display with player's current health
         VBox healthDisplay = createHealthDisplay(
                 playerManager.getHealth(),
                 playerManager.getMaxHealth()
         );
-
-        // Set health display reference directly
         playerManager.setHealthDisplay(healthDisplay);
-
-        // Find and set the health text reference
         for (Node child : healthDisplay.getChildren()) {
             if (child instanceof Text) {
                 Text text = (Text) child;
@@ -776,11 +752,19 @@ public class UIFactory {
                 }
             }
         }
-
-        // Create top bar with initial score and wave
-        HBox topBar = createTopBar(playerManager.getScore(), 1, 10);
-
-        // Find and set score text reference
+        // Get difficulty and maxWaves
+        String difficultyLabel = "Apprentice";
+        int maxWaves = 5;
+        if (FXGL.getWorldProperties().exists("difficulty")) {
+            Object diffObj = FXGL.getWorldProperties().getObject("difficulty");
+            if (diffObj != null) {
+                String diffStr = diffObj.toString();
+                difficultyLabel = diffStr.charAt(0) + diffStr.substring(1).toLowerCase();
+                if (diffStr.equals("WIZARD")) maxWaves = 8;
+                else if (diffStr.equals("ARCHMAGE")) maxWaves = 12;
+            }
+        }
+        HBox topBar = createTopBar(playerManager.getScore(), 1, maxWaves, difficultyLabel);
         for (Node child : topBar.getChildren()) {
             if (child instanceof StackPane) {
                 StackPane stackPane = (StackPane) child;
@@ -803,19 +787,10 @@ public class UIFactory {
                 }
             }
         }
-
-        // Create performance display
         VBox performanceDisplay = createPerformanceDisplay();
-
-//        // Create controls text
-//        Node controlsText = createControlsText();
-//        controlsText.setId("controls-guide");
-
-        // Add UI elements to the scene
         FXGL.addUINode(healthDisplay);
         FXGL.addUINode(topBar);
         FXGL.addUINode(performanceDisplay);
-//        FXGL.addUINode(controlsText);
     }
 
     /**

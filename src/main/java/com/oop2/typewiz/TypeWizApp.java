@@ -133,11 +133,27 @@ public class TypeWizApp extends GameApplication {
      * Initializes all manager classes (Model and Controller components)
      */
     private void initializeManagers() {
-        // Get selected difficulty safely
-        Difficulty difficulty = Difficulty.APPRENTICE;
+        // Get selected difficulty robustly
+        Object diffObj = null;
         if (FXGL.getWorldProperties().exists("difficulty")) {
-            difficulty = FXGL.getWorldProperties().getObject("difficulty");
+            diffObj = FXGL.getWorldProperties().getObject("difficulty");
         }
+        Difficulty difficulty = null;
+        if (diffObj instanceof Difficulty) {
+            difficulty = (Difficulty) diffObj;
+        } else if (diffObj instanceof String) {
+            try {
+                difficulty = Difficulty.valueOf((String) diffObj);
+            } catch (Exception e) {
+                System.out.println("[DEBUG] Invalid difficulty string: " + diffObj);
+            }
+        }
+        // Fallback: read from file if not set in memory
+        if (difficulty == null) {
+            difficulty = loadDifficultyFromFile();
+        }
+        System.out.println("[DEBUG] Selected difficulty: " + difficulty + " (" + (difficulty == null ? "null" : difficulty.getClass().getName()) + ")");
+        if (difficulty == null) difficulty = Difficulty.APPRENTICE;
 
         // Set parameters based on difficulty
         int maxWaves;
@@ -176,7 +192,17 @@ public class TypeWizApp extends GameApplication {
                 maxSpawnsPerGroupByWave = new int[]{2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8};
                 spawnDelayMultipliers = new double[]{0.9, 0.85, 0.8, 0.75, 0.7, 0.65, 0.6, 0.55, 0.5, 0.45, 0.4, 0.35};
             }
-            default -> throw new IllegalStateException("Unknown difficulty: " + difficulty);
+            default -> {
+                System.out.println("[DEBUG] Unknown difficulty value: " + difficulty);
+                // Set safe defaults
+                maxWaves = 5;
+                maxActiveEntities = 5;
+                waveSpawnsPerWave = new int[]{4, 5, 6, 7, 8};
+                waveSpeedMultipliers = new double[]{0.4, 0.4, 0.4, 0.5, 0.6};
+                minSpawnsPerGroupByWave = new int[]{1, 1, 1, 1, 1};
+                maxSpawnsPerGroupByWave = new int[]{1, 1, 2, 2, 2};
+                spawnDelayMultipliers = new double[]{1.5, 1.5, 1.4, 1.3, 1.3};
+            }
         }
 
         // Create model components
@@ -200,6 +226,17 @@ public class TypeWizApp extends GameApplication {
         FXGL.getWorldProperties().setValue("inputManager", inputManager);
         inputManager.setupInput();
         inputManager.setRestartGameCallback(v -> restartGame());
+    }
+
+    // Add this method to load difficulty from file
+    private static Difficulty loadDifficultyFromFile() {
+        try {
+            String value = java.nio.file.Files.readString(java.nio.file.Path.of("selected_difficulty.txt")).trim();
+            return Difficulty.valueOf(value);
+        } catch (Exception e) {
+            System.out.println("[DEBUG] Failed to load difficulty, defaulting to APPRENTICE: " + e.getMessage());
+            return Difficulty.APPRENTICE;
+        }
     }
 
     /**
