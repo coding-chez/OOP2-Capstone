@@ -291,11 +291,11 @@ public class GamePromptFactory {
         statsLayout.setPadding(new Insets(25));
 
         // Left column (Magical Stats)
-        VBox leftColumn = new VBox(20, scoreText, highScoreText, statsPanel);
+        VBox leftColumn = new VBox(10, scoreText, highScoreText, statsPanel);
         leftColumn.setAlignment(Pos.CENTER);
         leftColumn.setPadding(new Insets(15));
 
-        Rectangle leftBg = new Rectangle(450, 360);
+        Rectangle leftBg = new Rectangle(450, 400);
         leftBg.setArcWidth(CORNER_RADIUS);
         leftBg.setArcHeight(CORNER_RADIUS);
         leftBg.setFill(Color.rgb(45, 0, 75, 0.8));
@@ -303,11 +303,11 @@ public class GamePromptFactory {
         leftBg.setStrokeWidth(2);
 
         // Right column (Mystical Graph)
-        VBox rightColumn = new VBox(20, graphCanvas);
+        VBox rightColumn = new VBox(10, graphCanvas);
         rightColumn.setAlignment(Pos.CENTER);
         rightColumn.setPadding(new Insets(15));
 
-        Rectangle rightBg = new Rectangle(450, 360);
+        Rectangle rightBg = new Rectangle(450, 400);
         rightBg.setArcWidth(CORNER_RADIUS);
         rightBg.setArcHeight(CORNER_RADIUS);
         rightBg.setFill(Color.rgb(75, 0, 130, 0.8));

@@ -9,6 +9,9 @@ public class SceneManager {
         System.out.println("[DEBUG] Showing screen: " + screenType);
         FXGL.getGameScene().clearUINodes();  // Clear existing nodes first
 
+        // Set default cursor for the entire scene
+        FXGL.getGameScene().getRoot().setCursor(TypeWizApp.CLOSED_BOOK_CURSOR);
+
         switch (screenType) {
             case LOGIN -> {
                 FXGL.getSceneService().pushSubScene(new LoginScreen());
@@ -33,7 +36,10 @@ public class SceneManager {
             default -> throw new IllegalStateException("Unexpected screen: " + screenType);
         }
 
-        TypeWizApp.setupCustomCursor();
+        // Ensure cursor is set after screen transition
+        FXGL.runOnce(() -> {
+            FXGL.getGameScene().getRoot().setCursor(TypeWizApp.CLOSED_BOOK_CURSOR);
+        }, javafx.util.Duration.millis(100));
     }
 
     private static void startGame(Difficulty difficulty) {

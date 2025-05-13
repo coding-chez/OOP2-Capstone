@@ -9,6 +9,7 @@ import com.oop2.typewiz.util.CustomSceneFactory;
 import com.oop2.typewiz.util.SoundManager;
 import javafx.scene.ImageCursor;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -81,8 +82,21 @@ public class TypeWizApp extends GameApplication {
         CLOSED_BOOK_CURSOR = new ImageCursor(scaledClosedBookImg, 16, 16); // Centered hotspot
         OPEN_BOOK_CURSOR = new ImageCursor(scaledOpenBookImg, 16, 16); // Centered hotspot
 
-        // default cursor
+        // Set default cursor for the entire scene
         FXGL.getGameScene().getRoot().setCursor(CLOSED_BOOK_CURSOR);
+
+        // Add cursor change on hover for all interactive elements
+        FXGL.getGameScene().getRoot().setOnMouseEntered(e -> {
+            Node target = (Node) e.getTarget();
+            if (target instanceof Button || target instanceof Text ||
+                    target.getStyleClass().contains("clickable")) {
+                target.setCursor(OPEN_BOOK_CURSOR);
+            }
+        });
+
+        FXGL.getGameScene().getRoot().setOnMouseExited(e -> {
+            FXGL.getGameScene().getRoot().setCursor(CLOSED_BOOK_CURSOR);
+        });
     }
 
     @Override
@@ -93,6 +107,10 @@ public class TypeWizApp extends GameApplication {
     @Override
     protected void initGame() {
         System.out.println("[DEBUG] Starting game initialization");
+
+        // Set default cursor for game scene
+        FXGL.getGameScene().getRoot().setCursor(CLOSED_BOOK_CURSOR);
+
         // Initialize managers first (Model and Controller components)
         FXGL.getAssetLoader().loadSound("sound-library/click.wav");
         initializeManagers();
@@ -637,6 +655,9 @@ public class TypeWizApp extends GameApplication {
 
     private void backToTower() {
         System.out.println("[DEBUG] Going back to tower");
+
+        // Set default cursor
+        FXGL.getGameScene().getRoot().setCursor(CLOSED_BOOK_CURSOR);
 
         // Stop game music
         SoundManager.getInstance().stopBGM();
