@@ -92,6 +92,7 @@ public class TypeWizApp extends GameApplication {
     }
     @Override
     protected void initGame() {
+        System.out.println("[DEBUG] Starting game initialization");
         // Initialize managers first (Model and Controller components)
         FXGL.getAssetLoader().loadSound("sound-library/click.wav");
         initializeManagers();
@@ -105,13 +106,18 @@ public class TypeWizApp extends GameApplication {
         // Set up state handlers
         setupStateHandlers();
 
+        // Make sure any previous music is stopped
+        SoundManager.getInstance().stopBGM();
+
         // Start game music with fade in
-        SoundManager.getInstance().stopBGM(); // Make sure any previous music is stopped
+        System.out.println("[DEBUG] Starting game music");
         SoundManager.getInstance().playBGM("game");
         SoundManager.getInstance().fadeInBGM(Duration.seconds(2.0));
 
         // Start the first wave
         stateManager.announceWave(1);
+
+        System.out.println("[DEBUG] Game initialization complete");
     }
 
     /**
@@ -627,6 +633,8 @@ public class TypeWizApp extends GameApplication {
     }
 
     private void backToTower() {
+        System.out.println("[DEBUG] Going back to tower");
+
         // Stop game music
         SoundManager.getInstance().stopBGM();
 
@@ -642,8 +650,19 @@ public class TypeWizApp extends GameApplication {
             FXGL.removeUINode(node);
         }
 
-        // Show main menu screen
+        // Reset game state
+        if (stateManager != null) {
+            stateManager.startPlaying(null);
+        }
+
+        // Show main menu screen and start menu music
         SceneManager.showScreen(TypeWizApp.ScreenType.MAIN_MENU);
+
+        // Start menu music with a small delay
+        FXGL.runOnce(() -> {
+            System.out.println("[DEBUG] Starting menu music after back to tower");
+            SoundManager.getInstance().playBGM("menu");
+        }, javafx.util.Duration.millis(200));
     }
 
     public static void main(String[] args) {

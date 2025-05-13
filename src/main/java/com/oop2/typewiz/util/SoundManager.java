@@ -3,6 +3,7 @@ package com.oop2.typewiz.util;
 import com.almasb.fxgl.audio.Music;
 import com.almasb.fxgl.dsl.FXGL;
 import javafx.util.Duration;
+import javafx.scene.media.MediaPlayer;
 
 /**
  * Manages all game sounds and music.
@@ -78,34 +79,70 @@ public class SoundManager {
         }
     }
 
+    private void ensureCorrectVolume() {
+        // Get current volume settings
+        double currentMusicVolume = FXGL.getSettings().getGlobalMusicVolume();
+        double currentSoundVolume = FXGL.getSettings().getGlobalSoundVolume();
+
+        System.out.println("[DEBUG] Current volume settings - Music: " + currentMusicVolume + ", Sound: " + currentSoundVolume);
+
+        // Reset to default values if too low
+        if (currentMusicVolume < 0.1) {
+            System.out.println("[DEBUG] Music volume too low, resetting to default");
+            FXGL.getSettings().setGlobalMusicVolume(bgmVolume);
+        }
+
+        if (currentSoundVolume < 0.1) {
+            System.out.println("[DEBUG] Sound volume too low, resetting to default");
+            FXGL.getSettings().setGlobalSoundVolume(sfxVolume);
+        }
+    }
+
+    /**
+     * Plays background music
+     * @param type The type of BGM to play ("menu" or "game")
+     */
     public void playBGM(String type) {
+        System.out.println("[DEBUG] Playing BGM: " + type);
         try {
-            // Stop current BGM if playing
+            // Ensure volume settings are correct
+            ensureCorrectVolume();
+
             if (currentBGM != null) {
+                System.out.println("[DEBUG] Stopping previous BGM");
                 FXGL.getAudioPlayer().stopMusic(currentBGM);
             }
 
-            // Select and play new BGM
-            String bgmFile;
-            switch (type.toLowerCase()) {
-                case "menu":
-                    bgmFile = MENU_BGM;
-                    break;
-                case "game":
-                    bgmFile = GAME_BGM;
-                    break;
-//                case "boss":
-//                    bgmFile = BOSS_BGM;
-//                    break;
-                default:
-                    bgmFile = MENU_BGM;
+            String musicFile;
+            if ("game".equals(type)) {
+                musicFile = GAME_BGM;
+            } else {
+                musicFile = MENU_BGM;
             }
 
-            currentBGM = FXGL.getAssetLoader().loadMusic(bgmFile);
-            FXGL.getAudioPlayer().loopMusic(currentBGM);
-            setMusicVolume(bgmVolume);
+            System.out.println("[DEBUG] Loading music file: " + musicFile);
+            currentBGM = FXGL.getAssetLoader().loadMusic(musicFile);
+
+            if (currentBGM != null) {
+                // Set volume before playing
+                System.out.println("[DEBUG] Setting music volume to: " + bgmVolume);
+                FXGL.getSettings().setGlobalMusicVolume(bgmVolume);
+
+                // Play the music
+                System.out.println("[DEBUG] Starting music playback");
+                FXGL.getAudioPlayer().loopMusic(currentBGM);
+
+                // Verify volume after playing
+                double currentVolume = FXGL.getSettings().getGlobalMusicVolume();
+                System.out.println("[DEBUG] Current global music volume: " + currentVolume);
+
+                System.out.println("[DEBUG] Music started playing");
+            } else {
+                System.out.println("[DEBUG] Failed to load music file");
+            }
         } catch (Exception e) {
-            System.err.println("Error playing BGM: " + e.getMessage());
+            System.out.println("[DEBUG] Error playing BGM: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -155,9 +192,31 @@ public class SoundManager {
         }
     }
 
+    private void ensureBackgroundMusic(String type) {
+        if (currentBGM == null) {
+            System.out.println("[DEBUG] Background music not playing, restarting it");
+            playBGM(type);
+        }
+    }
+
     public void playWaveAnnounce() {
         try {
+            // Ensure game music is playing
+            ensureBackgroundMusic("game");
+
+            // Temporarily lower BGM volume
+            double originalVolume = FXGL.getSettings().getGlobalMusicVolume();
+            FXGL.getSettings().setGlobalMusicVolume(originalVolume * 0.5);
+
+            // Play the wave announcement
             FXGL.getAudioPlayer().playSound(FXGL.getAssetLoader().loadSound(WAVE_ANNOUNCE));
+
+            // Restore BGM volume after a delay
+            FXGL.runOnce(() -> {
+                FXGL.getSettings().setGlobalMusicVolume(originalVolume);
+                // Double check that music is still playing
+                ensureBackgroundMusic("game");
+            }, javafx.util.Duration.seconds(2));
         } catch (Exception e) {
             System.err.println("Error playing wave announce sound: " + e.getMessage());
         }
@@ -215,30 +274,15 @@ public class SoundManager {
 
     public void fadeOutBGM(Duration duration) {
         if (currentBGM != null) {
-            // Create fade out effect
-            double startVolume = bgmVolume;
-            javafx.animation.Timeline fadeOut = new javafx.animation.Timeline(
-                    new javafx.animation.KeyFrame(Duration.ZERO,
-                            e -> FXGL.getSettings().setGlobalMusicVolume(startVolume)),
-                    new javafx.animation.KeyFrame(duration,
-                            e -> FXGL.getSettings().setGlobalMusicVolume(0.0))
-            );
-            fadeOut.setOnFinished(e -> stopBGM());
-            fadeOut.play();
+            // Simply lower the volume - the music will be stopped separately
+            FXGL.getSettings().setGlobalMusicVolume(0.0);
         }
     }
 
     public void fadeInBGM(Duration duration) {
         if (currentBGM != null) {
-            // Create fade in effect
-            FXGL.getSettings().setGlobalMusicVolume(0.0);
-            javafx.animation.Timeline fadeIn = new javafx.animation.Timeline(
-                    new javafx.animation.KeyFrame(Duration.ZERO,
-                            e -> FXGL.getSettings().setGlobalMusicVolume(0.0)),
-                    new javafx.animation.KeyFrame(duration,
-                            e -> FXGL.getSettings().setGlobalMusicVolume(bgmVolume))
-            );
-            fadeIn.play();
+            // Simply restore the volume
+            FXGL.getSettings().setGlobalMusicVolume(bgmVolume);
         }
     }
 

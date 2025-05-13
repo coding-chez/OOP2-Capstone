@@ -6,6 +6,7 @@ import javafx.scene.Node;
 
 public class SceneManager {
     public static void showScreen(TypeWizApp.ScreenType screenType) {
+        System.out.println("[DEBUG] Showing screen: " + screenType);
         FXGL.getGameScene().clearUINodes();  // Clear existing nodes first
 
         switch (screenType) {
@@ -18,9 +19,10 @@ public class SceneManager {
             case LOADING -> {
                 FXGL.getSceneService().pushSubScene(new LoadingScreen());
             }
-            case MAIN_MENU ->{
+            case MAIN_MENU -> {
                 FXGL.getSceneService().pushSubScene(new MainMenuScreen());
-            }case DIFFICULTY_SELECTION -> {
+            }
+            case DIFFICULTY_SELECTION -> {
                 new DifficultyMenuScreen(
                         () -> showScreen(TypeWizApp.ScreenType.MAIN_MENU),
                         () -> startGame(Difficulty.APPRENTICE),
@@ -29,7 +31,7 @@ public class SceneManager {
                 ).getContentRoot();
             }
             default -> throw new IllegalStateException("Unexpected screen: " + screenType);
-        };
+        }
 
         TypeWizApp.setupCustomCursor();
     }
@@ -37,14 +39,21 @@ public class SceneManager {
     private static void startGame(Difficulty difficulty) {
         // Store the selected difficulty
         FXGL.getWorldProperties().setValue("difficulty", difficulty);
+        FXGL.getWorldProperties().setValue("difficultyString", difficulty.toString());
 
         // Stop menu music first
         SoundManager.getInstance().stopBGM();
 
-        // Small delay before starting the game to ensure clean state
+        // Start the game with a small delay to ensure clean state
         FXGL.runOnce(() -> {
             // Start the game
             FXGL.getGameController().startNewGame();
         }, javafx.util.Duration.millis(100));
+
+        // Start game music with a longer delay to ensure game is initialized
+        FXGL.runOnce(() -> {
+            System.out.println("[DEBUG] Starting game music in SceneManager");
+            SoundManager.getInstance().playBGM("game");
+        }, javafx.util.Duration.millis(300));
     }
 }
