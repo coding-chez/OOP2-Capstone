@@ -72,54 +72,27 @@ public class TypeWizApp extends GameApplication {
     }
 
     public static void setupCustomCursor() {
-        try {
-            System.out.println("[DEBUG] Setting up custom cursors");
+        Image closedBookImg = FXGL.image("magicbook.png");
+        Image openBookImg = FXGL.image("magicbook_hover.png");
 
-            // Load cursor images from the correct path
-            Image closedBookImg = FXGL.image("magicbook.png");
-            Image openBookImg = FXGL.image("magicbook_hover.png");
+        Image scaledClosedBookImg = new Image(closedBookImg.getUrl(), 32, 32, true, true);
+        Image scaledOpenBookImg = new Image(openBookImg.getUrl(), 32, 32, true, true);
 
-            System.out.println("[DEBUG] Loaded cursor images - Closed book: " + closedBookImg.getWidth() + "x" + closedBookImg.getHeight()
-                    + ", Open book: " + openBookImg.getWidth() + "x" + openBookImg.getHeight());
+        CLOSED_BOOK_CURSOR = new ImageCursor(scaledClosedBookImg, 16, 16); // Centered hotspot
+        OPEN_BOOK_CURSOR = new ImageCursor(scaledOpenBookImg, 16, 16); // Centered hotspot
 
-            // Scale images to cursor size
-            Image scaledClosedBookImg = new Image(closedBookImg.getUrl(), 32, 32, true, true);
-            Image scaledOpenBookImg = new Image(openBookImg.getUrl(), 32, 32, true, true);
-
-            // Create cursors with centered hotspots
-            CLOSED_BOOK_CURSOR = new ImageCursor(scaledClosedBookImg, 16, 16);
-            OPEN_BOOK_CURSOR = new ImageCursor(scaledOpenBookImg, 16, 16);
-
-            System.out.println("[DEBUG] Custom cursors initialized successfully");
-
-        } catch (Exception e) {
-            System.out.println("[ERROR] Failed to set up custom cursors: " + e.getMessage());
-            e.printStackTrace();
-        }
+        // default cursor
+        FXGL.getGameScene().getRoot().setCursor(CLOSED_BOOK_CURSOR);
     }
 
     @Override
     protected void initUI() {
         // Initialize custom cursor for the first screen
         setupCustomCursor();
-        // Ensure cursor is applied to all UI elements after a short delay
-        FXGL.runOnce(() -> {
-            SceneManager.ensureCustomCursor();
-        }, Duration.millis(100));
     }
-
     @Override
     protected void initGame() {
         System.out.println("[DEBUG] Starting game initialization");
-
-        // Make sure cursors are initialized
-        if (CLOSED_BOOK_CURSOR == null || OPEN_BOOK_CURSOR == null) {
-            setupCustomCursor();
-        }
-
-        // Ensure custom cursor is applied
-        SceneManager.ensureCustomCursor();
-
         // Initialize managers first (Model and Controller components)
         FXGL.getAssetLoader().loadSound("sound-library/click.wav");
         initializeManagers();
@@ -145,19 +118,6 @@ public class TypeWizApp extends GameApplication {
         stateManager.announceWave(1);
 
         System.out.println("[DEBUG] Game initialization complete");
-
-        // Ensure cursor is set after initialization with multiple checks
-        FXGL.runOnce(() -> {
-            SceneManager.ensureCustomCursor();
-        }, Duration.seconds(0.5));
-
-        FXGL.runOnce(() -> {
-            SceneManager.ensureCustomCursor();
-        }, Duration.seconds(1.0));
-
-        FXGL.runOnce(() -> {
-            SceneManager.ensureCustomCursor();
-        }, Duration.seconds(2.0));
     }
 
     /**
@@ -400,6 +360,9 @@ public class TypeWizApp extends GameApplication {
         // Pass character count to statistics factory
         StatsUIFactory.setTotalCharactersTyped(playerManager.getTotalCharactersTyped());
 
+        playerManager.updateHighScoreInDatabaseIfNeeded();
+
+        // Create game over screen with all statistics
         Node endGameScreen = GamePromptFactory.createGameOverScreen(
                 title,
                 playerManager.getScore(),
@@ -674,9 +637,6 @@ public class TypeWizApp extends GameApplication {
 
     private void backToTower() {
         System.out.println("[DEBUG] Going back to tower");
-
-        // Set default cursor
-        FXGL.getGameScene().getRoot().setCursor(CLOSED_BOOK_CURSOR);
 
         // Stop game music
         SoundManager.getInstance().stopBGM();
