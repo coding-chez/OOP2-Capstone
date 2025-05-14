@@ -13,9 +13,11 @@
 
 <div align="center">
   
-### Contributors
+### C.O.D.E Collective
 
 </div>
+
+<div align="center">
 
 |  | Name                          | GitHub Username          | Contributions                                                  |
 |-----------------|-------------------------------|--------------------------|----------------------------------------------------------------|
@@ -28,6 +30,7 @@
 
 ---
 
+</div>
 
 ## About the Project 💜✨
 
